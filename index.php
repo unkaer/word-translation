@@ -1,12 +1,19 @@
 
    <form action="" method='POST'>
       <p>单词查询：<input name="word" style="" autofocus value="">
-      <input type="submit" value="搜索"></p>
+      <input type="submit" value="查询"></p>
+   </form>
+   <form action="./api.php" method='POST'>
+      <p>API查询：<input name="word" style="" autofocus value="">
+      <input type="submit" value="查询"></p>
    </form>
 <?php
    
 if(array_key_exists("word", $_POST)|array_key_exists("word", $_GET)){
    if(isset($_POST["word"])){$word = $_POST["word"];}else{$word = $_GET["word"];}
+   if($word==""){
+      print_r("请输入要查询的单词");
+   }else{
    class MyDB extends SQLite3
    {
       function __construct()
@@ -39,13 +46,9 @@ if(array_key_exists("word", $_POST)|array_key_exists("word", $_GET)){
 
    $ret = $db->query($sql);
    while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-      // echo "topic_id = ". $row['topic_id'] . "\n<br>";
       echo "word = ". $row['word'] . "\n<br>";
       echo "accent = ". $row['accent'] . "\n<br>";
       echo "mean_cn = ". $row['mean_cn'] . "\n<br>";
-      echo "freq = ". $row['freq'] . "\n<br><br>";
-      // print_r($row);
-      
    }
 
    for($i=0;$i<9;$i++){
@@ -53,21 +56,40 @@ if(array_key_exists("word", $_POST)|array_key_exists("word", $_GET)){
          $sql =<<<EOF
          SELECT * from $list2[$i] WHERE variant=="$word" OR origin=="$word";
       EOF;
+      $j=$i;
       break;
       }
    }
 
+
+   $i=0;
    $ret = $db->query($sql);
    while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-      if($row["origin"]==$word){
-         print_r("变形有".$row["variant"]);
-      }
-      if($row["variant"]==$word){
-         print_r("原型为".$row["origin"]);
+      $origin=$row["origin"];
+      $variant[$i]=$row["variant"];
+      $i++;
+   }
+   if($variant[0]==$word){   // 查找所有变型
+      $sql =<<<EOF
+         SELECT * from $list2[$j] WHERE origin=="$origin";
+      EOF;
+      $i=0;
+      $ret = $db->query($sql);
+      while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
+         $variant[$i]=$row["variant"];
+         $i++;
       }
    }
 
-   echo "检索完成\n";
-   $db->close();
+   print_r("原型为:".$origin);
+   print_r("<br>变型有: ");
+   for($i=0;$i<sizeof($variant);$i++){
+      print_r($variant[$i]."; ");
+   }
+
+   echo "<br>检索完成\n";
+   // print_r($origin);
+   // print_r($variant);
+   $db->close();}
 }
 ?>
