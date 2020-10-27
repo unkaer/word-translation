@@ -74,9 +74,8 @@ if(array_key_exists("word", $_POST)|array_key_exists("word", $_GET)){
    }
 
    $arr = array('word' => $word, 'accent' => $accent, 'mean_cn' => $mean_cn, 'origin' => $origin, 'variant' => $variant);
+   header("Content-type: text/json");
    echo json_encode($arr);
-   // print_r($origin);
-   // print_r($variant);
    $db->close();}
 }
 ?>
