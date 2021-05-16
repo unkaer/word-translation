@@ -5,3 +5,6 @@ php使用sqlite查询单词，翻译。
 
 "lookup.db" 来自百词斩词典安卓app 数据
 进行了精简
+
+# 演示网站 
+http://fy.unkaer.cf

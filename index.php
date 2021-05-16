@@ -1,4 +1,4 @@
-   <form action="" method='POST'>
+<form action="" method='POST'>
       <p>单词查询：<input name="word" style="" autofocus value="">
       <input type="submit" value="查询"></p>
    </form>
@@ -6,7 +6,7 @@
       <p>API查询：<input name="word" style="" autofocus value="">
       <input type="submit" value="查询"></p>
    </form>
-<?php
+<?php 
    class MyDB extends SQLite3
    {
       function __construct()
@@ -31,14 +31,12 @@
          $fist=substr($word, 0 , 1);
          if(($fist>="a"&&$fist<="z")|($fist>="A"&&$fist<="Z")){   // 是字母，找单词
             for($i=0;$i<$N;$i++){   // 每一个都跑一遍
-               $sql =<<<EOF
-                  SELECT * from $list0[$i] WHERE word=="$word";
-               EOF;
+               $sql = "SELECT * from $list0[$i] WHERE word=='$word'";
                $ret = $db->query($sql);
                while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-                  echo "<br>单词：<a href=\"?word=".$row['word']."\">".$row['word']."</a>\n<br>";
-                  echo "发音：". $row['accent'] . "\n<br>";
-                  echo "中文意思：". $row['mean_cn'] . "\n<br>";
+                  echo "<br>单词：<a href=?word=".$row[word]. ">" .$row[word]. "</a>\n<br>";
+                  echo "发音：". $row[accent] . "\n<br>";
+                  echo "中文意思：". $row[mean_cn] . "\n<br>";
                   echo "数据库：". $list0[$i] . "\n<br>";
                }
             }
@@ -46,13 +44,11 @@
             //是否存在变体
             $j=0;
             for($i=0;$i<$N;$i++){  // 每一个都跑一遍
-               $sql =<<<EOF
-                  SELECT * from $list1[$i] WHERE variant=="$word" OR origin=="$word";
-               EOF;
+               $sql = "SELECT * from $list1[$i] WHERE variant=='$word' OR origin=='$word'";
                $ret = $db->query($sql);
                while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-                  $origin[$j]=$row["origin"];
-                  $variant[$j]=$row["variant"];
+                  $origin[$j]=$row[origin];
+                  $variant[$j]=$row[variant];
                   $j++;
                }
             }
@@ -67,14 +63,12 @@
          }
          else{   // 非字母，查找中文
             for($i=0;$i<$N;$i++){   // 每一个都跑一遍
-               $sql =<<<EOF
-                  SELECT * from $list0[$i] WHERE mean_cn LIKE "%$word%";
-               EOF;
+               $sql = "SELECT * from $list0[$i] WHERE mean_cn LIKE '%$word%'";
                $ret = $db->query($sql);
                while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-                  echo "单词：<a href=\"?word=".$row['word']."\">".$row['word']."</a>\n<br>";
-                  echo "发音：". $row['accent'] . "\n<br>";
-                  echo "中文意思：". $row['mean_cn'] . "\n<br>";
+                  echo "单词：<a href=\"?word=".$row[word]."\">".$row[word]."</a>\n<br>";
+                  echo "发音：". $row[accent] . "\n<br>";
+                  echo "中文意思：". $row[mean_cn] . "\n<br>";
                }
             }
          }
@@ -83,26 +77,22 @@
    else{
       echo "随机展示: <br>";
       $i = rand(0,8);
-      $sql =<<<EOF
-         SELECT * FROM $list0[$i] ORDER BY RANDOM() limit 1
-      EOF;
+      $sql = "SELECT * FROM $list0[$i] ORDER BY RANDOM() limit 1";
       $ret = $db->query($sql);
       while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-         $word=$row['word'];
-         echo "单词：". $row['word'] . "\n<br>";
-         echo "发音：". $row['accent'] . "\n<br>";
-         echo "中文意思：". $row['mean_cn'] . "\n<br>";
+         $word=$row[word];
+         echo "单词：". $row[word] . "\n<br>";
+         echo "发音：". $row[accent] . "\n<br>";
+         echo "中文意思：". $row[mean_cn] . "\n<br>";
       }
       //是否存在变体
       $j=0;
       for($i=0;$i<$N;$i++){  // 每一个都跑一遍
-         $sql =<<<EOF
-            SELECT * from $list1[$i] WHERE variant=="$word" OR origin=="$word";
-         EOF;
+         $sql = "SELECT * from $list1[$i] WHERE variant=='$word' OR origin=='$word'";
          $ret = $db->query($sql);
          while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
-            $origin[$j]=$row["origin"];
-            $variant[$j]=$row["variant"];
+            $origin[$j]=$row[origin];
+            $variant[$j]=$row[variant];
             $j++;
          }
       }
@@ -116,5 +106,4 @@
       }
    }
    $db->close();
-
 ?>
